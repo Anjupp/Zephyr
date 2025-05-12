@@ -48,7 +48,7 @@ static int ad74416h_reg_access1(const struct device *dev, uint8_t cmd,
     // struct spi_buf_set tx = {
     //     .buffers = buf,
     // };
-    // if (cmd == ADXL362_READ_REG) {
+    
     struct spi_buf_set rx = {
     .buffers = buf,
     .count = 1
@@ -69,9 +69,6 @@ static int ad74416h_reg_access(const struct device *dev, uint8_t cmd,
     const struct ad74416h_config *cfg = dev->config;
     uint8_t access[5] = { cmd,0x6e,0x00 , reg_addr, 0x48  };
     const struct spi_buf buf[2] = {{.buf = access, .len = 5},{.buf = data,.len = length}};
-    // const struct spi_buf buf[2];
-    // buf[0] = {.buf = access, .len = 5};
-    // buf[1]= {.buf = data,.len = length}};
 
     struct spi_buf_set tx = {
         .buffers = buf,
@@ -88,34 +85,18 @@ static int ad74416h_reg_access(const struct device *dev, uint8_t cmd,
     return spi_write_dt(&cfg->spi, &tx);
 }
 
-// static inline int ad74416h_reg_read(const struct device *dev, uint8_t *read_buf,
-//                   uint8_t register_address, uint8_t count)
-// {
-//     return ad74416h_reg_access(dev, 0x00,
-//                   register_address, read_buf, count);
-// }
-// static inline int ad74416h_reg_read1(const struct device *dev, uint8_t *read_buf,
-//                   uint8_t register_address, uint8_t count)
-// {
-//     return ad74416h_reg_access1(dev, 0x00,
-//                   register_address, read_buf, count);
-// }
-
-
-static int ad74416h_reg_read(const struct device *dev, uint8_t *read_buf,
+static inline int ad74416h_reg_read(const struct device *dev, uint8_t *read_buf,
                   uint8_t register_address, uint8_t count)
 {
     return ad74416h_reg_access(dev, 0x00,
                   register_address, read_buf, count);
 }
-static int ad74416h_reg_read1(const struct device *dev, uint8_t *read_buf,
+static inline int ad74416h_reg_read1(const struct device *dev, uint8_t *read_buf,
                   uint8_t register_address, uint8_t count)
 {
     return ad74416h_reg_access1(dev, 0x00,
                   register_address, read_buf, count);
 }
-
-
 
 
 //Initialize the ad74416h
@@ -136,8 +117,8 @@ static int ad74416h_init(const struct device *dev)
     // ad74416h_scratch_test(dev);
     ret = ad74416h_reg_read(dev, &val,AD74416H_WTD_CONFIG,5);
     k_busy_wait(100);
-    // ad74416h_reg_read1(dev, &val,0x00,5);
-    // k_busy_wait(1000);
+    ad74416h_reg_read1(dev, &val,0x00,5);
+    k_busy_wait(1000);
     // }
 
     return ret;
