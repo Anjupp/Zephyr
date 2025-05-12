@@ -137,7 +137,7 @@ static int ad74416h_init(const struct device *dev)
     ret = ad74416h_reg_read(dev, &val,AD74416H_WTD_CONFIG,5);
     k_busy_wait(100);
     ad74416h_reg_read1(dev, &val,0x00,5);
-    k_busy_wait(1000);
+    // k_busy_wait(1000);
     // }
 
     return ret;
