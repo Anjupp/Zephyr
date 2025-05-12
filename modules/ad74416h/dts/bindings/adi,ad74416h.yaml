@@ -1,0 +1,29 @@
+# Description of the device
+description: Analog Devices Software IO
+
+# Compatibility string that matches the one in the Devicetree source and 
+# DT_DRV_COMPAT macro in the driver source code
+compatible: "adi,ad74416h"
+
+# Include common definitions from other bindings files
+# - sensor-device.yaml - common sensor properties
+# - spi-device.yaml - common SPI communication properties
+include: [sensor-device.yaml, spi-device.yaml]
+
+# Define specific Devicetree properties of the AD74416H
+properties: 
+
+ # cs-gpios:
+  #  type: phandle-array
+   # required: true
+    #description: GPIO pin used for chip select (CS) for the device.
+
+  dev_addr:
+    type: int
+    default: 0
+    description: Device address
+    enum:
+      - 0
+      - 1
+      - 2
+      - 3

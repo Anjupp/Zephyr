@@ -1,0 +1,6 @@
+name: ad74416h
+build: 
+  cmake: .
+  kconfig: Kconfig
+  settings:
+    dts_root: .

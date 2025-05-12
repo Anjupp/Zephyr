@@ -1,0 +1,23 @@
+// Create an alias for our AD74416H board
+/ {
+    aliases{
+        my-ad74416h = &ad74416h;
+    };
+};
+
+
+// Enable SPI1 and add AD74416H device
+&spi1 {
+	status = "okay";
+	pinctrl-0 = <&spi1_mosi_p0_15 &spi1_miso_p0_14 &spi1_sck_p0_16 &spi1_ss0_p0_17>;
+	pinctrl-names = "default";
+
+	ad74416h: ad74416h@0{
+		compatible = "adi,ad74416h";
+		reg = <0x0>;
+		spi-max-frequency = <1000000>;
+		status = "okay";
+        dev_addr = <0>;
+			
+	};
+};

@@ -1,0 +1,7 @@
+# Create a new option in menuconfig
+config AD74416H
+    bool "AD74416H Software IO"
+    default n         # set the driver to be disabled by default
+    depends on SPI    # Make it dependent on SPI
+    help 
+      Enable driver for the AD74416H. This driver depends on SPI

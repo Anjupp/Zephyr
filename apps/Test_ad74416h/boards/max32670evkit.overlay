@@ -1,0 +1,27 @@
+/*
+ * Copyright (c) 2023 Analog Devices, Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+ /{
+    aliases {
+        ad74416h-nod = &ad74416h;
+    };
+};
+
+&spi1 {
+	status = "okay";
+	pinctrl-0 = <&spi1_mosi_p0_15 &spi1_miso_p0_14 &spi1_sck_p0_16 &spi1_ss0_p0_13>;
+	pinctrl-names = "default";
+
+	ad74416h: ad74416h@0{
+		compatible = "adi,ad74416h";
+		reg = <0x0>;
+		spi-max-frequency = <1000000>;
+		status = "okay";
+			
+	};
+};
+
+

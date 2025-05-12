@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "util_macro.h": "c",
+        "gpio.h": "c",
+        "iterator": "c",
+        "xhash": "c",
+        "xmemory": "c",
+        "xtree": "c",
+        "log.h": "c"
+    },
+    "cfs.configureWorkspace": "Yes"
+}
