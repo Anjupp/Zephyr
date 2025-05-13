@@ -22,13 +22,13 @@ LOG_MODULE_REGISTER(AD74416H, CONFIG_SENSOR_LOG_LEVEL);
 
 /********************************declaration*****************************/
 static int ad74416h_init(const struct device *dev);
-static int ad74416h_reg_access1(const struct device *dev, uint8_t cmd,
+static int ad74416h_reg_access_read(const struct device *dev, uint8_t cmd,
                   uint8_t reg_addr, void *data, size_t length);
-static int ad74416h_reg_access(const struct device *dev, uint8_t cmd,
+static int ad74416h_reg_access_write(const struct device *dev, uint8_t cmd,
                   uint8_t reg_addr, void *data, size_t length);
-static int ad74416h_reg_read(const struct device *dev, uint8_t *read_buf,
+static int ad74416h_reg_write(const struct device *dev, uint8_t *read_buf,
                   uint8_t register_address, uint8_t count);
-static int ad74416h_reg_read1(const struct device *dev, uint8_t *read_buf,
+static int ad74416h_reg_read(const struct device *dev, uint8_t *read_buf,
                   uint8_t register_address, uint8_t count);
 
 
@@ -38,63 +38,49 @@ static int ad74416h_reg_read1(const struct device *dev, uint8_t *read_buf,
 
 /********************************Functions*****************************/
 
-static int ad74416h_reg_access1(const struct device *dev, uint8_t cmd,
+static int ad74416h_reg_access_read(const struct device *dev, uint8_t cmd,
                   uint8_t reg_addr, void *data, size_t length)
 {
     const struct ad74416h_config *cfg = dev->config;
     uint8_t access[5] = { cmd,0x00,0x00 , reg_addr, 0x00  };
-    const struct spi_buf buf[2] = {{.buf = access,.len = 5},{.buf = data, .len = length}};
 
-    // struct spi_buf_set tx = {
-    //     .buffers = buf,
-    // };
-    
-    struct spi_buf_set rx = {
-    .buffers = buf,
-    .count = 1
-    };
-    // tx.count = 0;
-    spi_read_dt(&cfg->spi, &rx);
-    // spi_transceive_dt(&cfg->spi, &tx, &rx);
-    printf ("Read RX");
+    const struct spi_buf tx_buf = {.buf = access, .len = 5};
+    struct spi_buf rx_bufs[1] = {{.buf = data, .len = length}};
+    const struct spi_buf_set tx_set = {.buffers = &tx_buf, .count = 1};
+    struct spi_buf_set rx_set = {.buffers = rx_bufs, .count = 1};
+
+    spi_transceive_dt(&cfg->spi, &tx_set, &rx_set);
+    printf("print data\n\r");
     return 0;
-    // }
-    // tx.count = 2;
-    // return spi_write_dt(&cfg->bus, &tx);
+
+
 }
 
-static int ad74416h_reg_access(const struct device *dev, uint8_t cmd,
+static int ad74416h_reg_access_write(const struct device *dev, uint8_t cmd,
                   uint8_t reg_addr, void *data, size_t length)
 {
     const struct ad74416h_config *cfg = dev->config;
     uint8_t access[5] = { cmd,0x6e,0x00 , reg_addr, 0x48  };
-    const struct spi_buf buf[2] = {{.buf = access, .len = 5},{.buf = data,.len = length}};
 
-    struct spi_buf_set tx = {
-        .buffers = buf,
-    };
-    // if (cmd == ADXL362_READ_REG) {
-    //  const struct spi_buf_set rx = {
-    //      .buffers = buf,
-    //      .count = 2
-    //  };
-    //  tx.count = 1;
-    //  return spi_transceive_dt(&cfg->bus, &tx, &rx);
-    // }
-    tx.count = 1;
-    return spi_write_dt(&cfg->spi, &tx);
+    const struct spi_buf tx_buf = {.buf = access, .len = 5};
+    struct spi_buf rx_bufs[1] = {{.buf = data, .len = length}};
+    const struct spi_buf_set tx_set = {.buffers = &tx_buf, .count = 1};
+    struct spi_buf_set rx_set = {.buffers = rx_bufs, .count = 1};
+
+    return spi_transceive_dt(&cfg->spi, &tx_set, &rx_set);
+    printf("print data\n\r");
 }
 
+static inline int ad74416h_reg_write(const struct device *dev, uint8_t *read_buf,
+                  uint8_t register_address, uint8_t count)
+{
+    return ad74416h_reg_access_write(dev, 0x00,
+                  register_address, read_buf, count);
+}
 static inline int ad74416h_reg_read(const struct device *dev, uint8_t *read_buf,
                   uint8_t register_address, uint8_t count)
 {
-    return ad74416h_reg_access(dev, 0x00,
-                  register_address, read_buf, count);
-}
-static inline int ad74416h_reg_read1(const struct device *dev, uint8_t *read_buf,
-                  uint8_t register_address, uint8_t count)
-{
-    return ad74416h_reg_access1(dev, 0x00,
+    return ad74416h_reg_access_read(dev, 0x00,
                   register_address, read_buf, count);
 }
 
@@ -113,13 +99,12 @@ static int ad74416h_init(const struct device *dev)
         return -ENODEV;
     }
     //Scratch test
-    // while(1){
-    // ad74416h_scratch_test(dev);
-    ret = ad74416h_reg_read(dev, &val,AD74416H_WTD_CONFIG,5);
-    k_busy_wait(100);
-    ad74416h_reg_read1(dev, &val,0x00,5);
+    while(1){
+    ad74416h_reg_write(dev, &val,AD74416H_WTD_CONFIG,5);
+    ad74416h_reg_read(dev, &val,0x00,5);
     k_busy_wait(1000);
-    // }
+    }
+
 
     return ret;
 }
